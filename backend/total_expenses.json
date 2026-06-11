@@ -1,0 +1,194 @@
+[
+    {
+        "month": "January",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 941,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 1287,
+            "Food": 3100,
+            "Subscription": 348,
+            "Travel": 280,
+            "Investments": 0.0,
+            "Miscellaneous": 714
+        }
+    },
+    {
+        "month": "February",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 181,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 3776,
+            "Subscription": 1727,
+            "Travel": 6150,
+            "Investments": 0.0,
+            "Miscellaneous": 2552
+        }
+    },
+    {
+        "month": "March",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 3036,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 2654,
+            "Subscription": 0.0,
+            "Travel": 3066,
+            "Investments": 0.0,
+            "Miscellaneous": 628
+        }
+    },
+    {
+        "month": "April",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 2679.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 2000.0,
+            "Food": 5139,
+            "Subscription": 1438,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 2188
+        }
+    },
+    {
+        "month": "May",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "June",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "July",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "August",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "September",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "October",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "November",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    },
+    {
+        "month": "December",
+        "year": 2026,
+        "expenses": {
+            "Housing": 0.0,
+            "Grocery": 0.0,
+            "Transport": 0.0,
+            "Lifestyle": 0.0,
+            "Entertainment": 0.0,
+            "Food": 0.0,
+            "Subscription": 0.0,
+            "Travel": 0.0,
+            "Investments": 0.0,
+            "Miscellaneous": 0.0
+        }
+    }
+]

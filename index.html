@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlashSpend — Flashcard Expense Tracker</title>
+  <meta name="description" content="Categorize your bank transactions in seconds with a fast, flashcard-style interface. Upload your CSV, swipe through expenses, and export a categorized statement." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ===== UPLOAD SCREEN ===== -->
+  <section id="screen-upload" class="screen active">
+    <div class="upload-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="upload-container">
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <h1 class="brand-name">FlashSpend</h1>
+        <p class="brand-tagline">Categorize expenses at the speed of thought</p>
+      </div>
+      <div class="dashboard-layout">
+        <div class="dashboard-left">
+          <div class="options-grid">
+            <!-- Option 1: Upload CSV -->
+            <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
+              <div class="dropzone-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p class="dropzone-label">Upload CSV</p>
+              <p class="dropzone-sub">Drop bank statement here or browse</p>
+              <input type="file" id="file-input" accept=".csv,.CSV,text/csv,application/vnd.ms-excel" hidden />
+            </div>
+
+            <!-- Option 2: Enter Manual Transaction -->
+            <div class="dropzone" id="btn-add-tx-upload-card" tabindex="0" role="button" aria-label="Add Manual Transaction">
+              <div class="dropzone-icon" style="color: var(--accent-emerald);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"/>
+                </svg>
+              </div>
+              <p class="dropzone-label">Manual Entry</p>
+              <p class="dropzone-sub">Add a transaction manually</p>
+            </div>
+          </div>
+          
+          <div class="upload-error" id="upload-error" hidden></div>
+
+          <div class="sample-info">
+            <details class="sample-details">
+              <summary>📋 What CSV format is expected?</summary>
+              <div class="sample-content">
+                <p>Your CSV should contain columns for <strong>Date</strong>, <strong>Description</strong> (or Payee/Merchant), and <strong>Amount</strong>. Column names are auto-detected.</p>
+                <pre class="sample-csv">Date,Description,Amount
+2024-01-15,Whole Foods Market,-42.50
+2024-01-16,Netflix Subscription,-15.99
+2024-01-17,Salary Deposit,3200.00</pre>
+                <button class="btn-sample" id="btn-load-sample">Load Sample Data</button>
+              </div>
+            </details>
+          </div>
+        </div>
+        
+        <div class="dashboard-right">
+          <div class="chart-card">
+            <h3 class="chart-title">Current Month Expenses (<span id="chart-month-label">...</span>)</h3>
+            <div class="canvas-wrap pie-wrap">
+              <canvas id="pieChart"></canvas>
+            </div>
+            <div id="pie-empty" hidden class="chart-empty">No expenses this month.</div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">Expenses by Category (Year to Date)</h3>
+            <div class="canvas-wrap bar-wrap">
+              <canvas id="barChart"></canvas>
+            </div>
+            <div id="bar-empty" hidden class="chart-empty">No expenses this year.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TRIAGE (FLASHCARD) SCREEN ===== -->
+  <section id="screen-triage" class="screen">
+    <header class="triage-header">
+      <div class="header-left">
+        <span class="brand-small">⚡ FlashSpend</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">Card 0 of 0</span>
+      </div>
+      <div class="header-right">
+        <button class="btn-icon" id="btn-add-tx-triage" title="Add Manual Transaction" aria-label="Add Transaction">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btn-undo" title="Undo last categorization (Ctrl+Z)" aria-label="Undo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 14 4 9 9 4"/>
+            <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+          </svg>
+        </button>
+        <button class="btn-icon btn-skip" id="btn-skip" title="Skip / mark as Miscellaneous" aria-label="Skip">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="13 17 18 12 13 7"/>
+            <polyline points="6 17 11 12 6 7"/>
+          </svg>
+        </button>
+        <button class="btn-primary" id="btn-finish-adding" hidden style="margin-left: 1rem; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.85rem;">
+          Done Adding
+        </button>
+      </div>
+    </header>
+
+    <!-- Landscape two-column body -->
+    <div class="triage-body">
+
+      <!-- LEFT: Flashcard -->
+      <div class="triage-left">
+        <div class="card-stage" id="card-stage">
+          <div class="card-shadow-behind card-behind-2"></div>
+          <div class="card-shadow-behind card-behind-1"></div>
+          <div class="flashcard" id="flashcard">
+            <div class="card-category-badge" id="card-badge" hidden></div>
+
+            <!-- Amount -->
+            <div class="card-amount" id="card-amount">₹0.00</div>
+            <input type="number" step="0.01" class="card-amount-edit" id="card-amount-edit" placeholder="-0.00" hidden>
+
+            <!-- Credit / Debit type -->
+            <div class="card-type-wrap">
+              <span class="card-type" id="card-type">Debit</span>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <!-- Sender / Receiver -->
+            <div class="card-person-label" id="card-person-label">Sent to</div>
+            <div class="card-person" id="card-person">—</div>
+            <input type="text" class="card-person-edit" id="card-person-edit" placeholder="Description or Person" hidden>
+
+            <!-- Remark -->
+            <div class="card-remark" id="card-remark" hidden></div>
+
+            <!-- Date -->
+            <div class="card-date" id="card-date">—</div>
+            <input type="date" class="card-date-edit" id="card-date-edit" hidden>
+          </div>
+        </div>
+
+        <div class="keyboard-hint" id="keyboard-hint">
+          <span class="kbd-icon">⌨</span> <kbd>Space</kbd> skip &nbsp;·&nbsp; <kbd>Ctrl+Z</kbd> undo
+        </div>
+      </div>
+
+      <!-- RIGHT: Category buttons -->
+      <div class="triage-right">
+        <div class="categories-grid" id="categories-grid" role="group" aria-label="Expense categories">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== DONE SCREEN ===== -->
+  <section id="screen-done" class="screen">
+    <div class="upload-bg-orbs">
+      <div class="orb orb-1" style="background:radial-gradient(circle, rgba(52,211,153,0.35) 0%, transparent 70%)"></div>
+      <div class="orb orb-2" style="background:radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)"></div>
+    </div>
+    <div class="done-container">
+      <div class="done-hero">
+        <div class="done-check">✓</div>
+        <h2 class="done-title">All done!</h2>
+        <p class="done-subtitle">You've categorized <strong id="done-count">0</strong> transactions.</p>
+      </div>
+
+      <div class="summary-grid" id="summary-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="done-actions">
+        <button class="btn-primary" id="btn-export">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Save Category Totals
+        </button>
+        <button class="btn-secondary" id="btn-reset-local" style="margin-right: 0.5rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Reset Local File
+        </button>
+        <button class="btn-secondary" id="btn-restart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+          </svg>
+          Start Over
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
