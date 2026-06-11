@@ -9,7 +9,7 @@
    CONFIGURATION
    ================================================================ */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 const CATEGORIES = [
   { name: 'Housing',       icon: '🏠', color: '#6366f1', key: '1' },

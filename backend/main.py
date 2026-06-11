@@ -6,10 +6,15 @@ import os
 from flask import Flask, request, jsonify, Response, send_from_directory
 from flask_cors import CORS
 
-# NOTE: renamed to csv_parser to avoid shadowing Python's built-in 'parser' module
-from csv_parser import parse_csv, to_categorised_csv, ParseError
-from categories import category_store
-from state import app_state
+try:
+    from .csv_parser import parse_csv, to_categorised_csv, ParseError
+    from .categories import category_store
+    from .state import app_state
+except ImportError:
+    # Local fallback for direct execution via `python backend/main.py`.
+    from csv_parser import parse_csv, to_categorised_csv, ParseError
+    from categories import category_store
+    from state import app_state
 import csv
 import json
 from datetime import datetime
@@ -19,7 +24,8 @@ from datetime import datetime
 # ──────────────────────────────────────────────
 
 # Serve the frontend (index.html / style.css / app.js) from the parent folder
-FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+BACKEND_DIR = os.path.dirname(__file__)
+FRONTEND_DIR = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
 
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
 CORS(app)
@@ -36,20 +42,47 @@ def ok(data: dict | list, status: int = 200):
 def err(message: str, status: int = 400):
     return jsonify({"ok": False, "error": message}), status
 
-# Path for the persistent local JSON
-LOCAL_JSON_PATH = os.path.join(os.path.dirname(__file__), "total_expenses.json")
-SETTINGS_JSON_PATH = os.path.join(os.path.dirname(__file__), "settings.json")
+def get_data_dir():
+    if os.environ.get("VERCEL"):
+        temp_dir = os.path.join("/tmp", "flashspend")
+        os.makedirs(temp_dir, exist_ok=True)
+        return temp_dir
+
+    return BACKEND_DIR
+
+
+DATA_DIR = get_data_dir()
+DEFAULT_LOCAL_JSON_PATH = os.path.join(BACKEND_DIR, "total_expenses.json")
+DEFAULT_SETTINGS_JSON_PATH = os.path.join(BACKEND_DIR, "settings.json")
+LOCAL_JSON_PATH = os.path.join(DATA_DIR, "total_expenses.json")
+SETTINGS_JSON_PATH = os.path.join(DATA_DIR, "settings.json")
+
+
+def read_json_file(path, default):
+    if not os.path.exists(path):
+        return default
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data
+    except json.JSONDecodeError:
+        return default
+
+
+def ensure_seed_file(target_path, seed_path):
+    if os.path.exists(target_path) or not os.path.exists(seed_path):
+        return
+
+    with open(seed_path, "r", encoding="utf-8") as src:
+        with open(target_path, "w", encoding="utf-8") as dst:
+            dst.write(src.read())
 
 def read_local_totals():
-    totals = []
-    if os.path.exists(LOCAL_JSON_PATH):
-        try:
-            with open(LOCAL_JSON_PATH, "r", encoding="utf-8") as f:
-                totals = json.load(f)
-                if not isinstance(totals, list):
-                    totals = []
-        except json.JSONDecodeError:
-            pass
+    ensure_seed_file(LOCAL_JSON_PATH, DEFAULT_LOCAL_JSON_PATH)
+    totals = read_json_file(LOCAL_JSON_PATH, [])
+    if not isinstance(totals, list):
+        totals = []
     return totals
 
 def write_local_totals(totals):
@@ -58,15 +91,9 @@ def write_local_totals(totals):
 
 
 def read_settings():
-    if not os.path.exists(SETTINGS_JSON_PATH):
-        return {}
-
-    try:
-        with open(SETTINGS_JSON_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data if isinstance(data, dict) else {}
-    except json.JSONDecodeError:
-        return {}
+    ensure_seed_file(SETTINGS_JSON_PATH, DEFAULT_SETTINGS_JSON_PATH)
+    data = read_json_file(SETTINGS_JSON_PATH, {})
+    return data if isinstance(data, dict) else {}
 
 
 def write_settings(settings):
